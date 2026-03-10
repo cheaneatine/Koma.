@@ -6,10 +6,11 @@ let genAIInstance: GoogleGenAI | null = null;
 
 const getAI = () => {
   if (!genAIInstance) {
-    // Hardcoded key provided by user for immediate fix on mobile
-    // WARNING: This key is now visible to anyone who inspects the app.
-    const apiKey = "AIzaSyD9iB-DrcotA9WEGcLL4nfQ7yGBOH0afYA";
-    genAIInstance = new GoogleGenAI({ apiKey });
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey || apiKey === 'undefined') {
+      console.error("GEMINI_API_KEY is missing from environment");
+    }
+    genAIInstance = new GoogleGenAI({ apiKey: apiKey || '' });
   }
   return genAIInstance;
 };
@@ -50,6 +51,9 @@ export const getRecommendations = async (input: string): Promise<Recommendation[
 
     if (message.includes("quota") || message.includes("429")) {
       throw new Error("You've reached the AI's daily limit. Please try again in a few minutes.");
+    }
+    if (message.includes("leaked") || message.includes("API_KEY_INVALID")) {
+      throw new Error("Your API key was disabled for security. Please generate a NEW key at aistudio.google.com and add it to the app settings.");
     }
     throw new Error(message);
   }
@@ -92,6 +96,9 @@ export const searchNews = async (query: string): Promise<NewsItem[]> => {
 
     if (message.includes("quota") || message.includes("429")) {
       throw new Error("You've reached the AI's daily limit. Please try again in a few minutes.");
+    }
+    if (message.includes("leaked") || message.includes("API_KEY_INVALID")) {
+      throw new Error("Your API key was disabled for security. Please generate a NEW key at aistudio.google.com and add it to the app settings.");
     }
     throw new Error(message);
   }
