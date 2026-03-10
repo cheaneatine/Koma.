@@ -8,7 +8,7 @@ const getAI = () => {
   if (!genAIInstance) {
     // Hardcoded key provided by user for immediate fix on mobile
     // WARNING: This key is now visible to anyone who inspects the app.
-    const apiKey = "AIzaSyCjAjfD1PZYek3GepOzOaRjGCW5uPuQ4Xo";
+    const apiKey = "AIzaSyD9iB-DrcotA9WEGcLL4nfQ7yGBOH0afYA";
     genAIInstance = new GoogleGenAI({ apiKey });
   }
   return genAIInstance;
@@ -33,7 +33,24 @@ export const getRecommendations = async (input: string): Promise<Recommendation[
     return JSON.parse(text);
   } catch (e: any) {
     console.error("Recommendation Error:", e);
-    const message = e.message || "Unknown connection error";
+    let message = "Unknown connection error";
+    
+    try {
+      if (e.message && e.message.includes('{')) {
+        const jsonError = JSON.parse(e.message.substring(e.message.indexOf('{')));
+        if (jsonError.error?.message) {
+          message = jsonError.error.message;
+        }
+      } else {
+        message = e.message || message;
+      }
+    } catch (parseErr) {
+      message = e.message || message;
+    }
+
+    if (message.includes("quota") || message.includes("429")) {
+      throw new Error("You've reached the AI's daily limit. Please try again in a few minutes.");
+    }
     throw new Error(message);
   }
 };
@@ -58,7 +75,24 @@ export const searchNews = async (query: string): Promise<NewsItem[]> => {
     return JSON.parse(text);
   } catch (e: any) {
     console.error("News Search Error:", e);
-    const message = e.message || "Unknown connection error";
+    let message = "Unknown connection error";
+    
+    try {
+      if (e.message && e.message.includes('{')) {
+        const jsonError = JSON.parse(e.message.substring(e.message.indexOf('{')));
+        if (jsonError.error?.message) {
+          message = jsonError.error.message;
+        }
+      } else {
+        message = e.message || message;
+      }
+    } catch (parseErr) {
+      message = e.message || message;
+    }
+
+    if (message.includes("quota") || message.includes("429")) {
+      throw new Error("You've reached the AI's daily limit. Please try again in a few minutes.");
+    }
     throw new Error(message);
   }
 };
