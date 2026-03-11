@@ -73,7 +73,7 @@ export default function App() {
         toggleTheme={toggleTheme} 
       />
       
-      <main className="flex-1 lg:pt-0 pt-16 lg:pl-20">
+      <main className="flex-1 lg:pt-0 pt-[calc(4rem+env(safe-area-inset-top))] lg:pl-20">
         <div className="max-w-7xl mx-auto">
           {activeTab === 'dashboard' && (
             <div className="space-y-6">

@@ -38,7 +38,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isDar
   return (
     <>
       {/* Mobile Header */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-[var(--bg-primary)] border-b border-[var(--border-color)] flex items-center justify-between px-4 z-40">
+      <div className="lg:hidden fixed top-0 left-0 right-0 h-[calc(4rem+env(safe-area-inset-top))] pt-[env(safe-area-inset-top)] bg-[var(--bg-primary)] border-b border-[var(--border-color)] flex items-center justify-between px-4 z-40">
         <div className="text-2xl font-bold tracking-tighter">
           K<span className="text-[var(--accent)]">.</span>
         </div>

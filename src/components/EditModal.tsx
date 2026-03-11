@@ -56,6 +56,19 @@ export const EditModal: React.FC<EditModalProps> = ({ series, onClose, onSave, o
               />
             </div>
             <div>
+              <label className="block text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider mb-1">Category</label>
+              <select
+                value={formData.status}
+                onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
+                className="w-full p-3 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-xl focus:outline-none focus:ring-2 focus:ring-[var(--accent)] transition-all appearance-none cursor-pointer"
+              >
+                <option value="reading">Currently Reading</option>
+                <option value="plan_to_read">Plan to Read</option>
+                <option value="stacking">Stacking</option>
+                <option value="completed">Completed</option>
+              </select>
+            </div>
+            <div>
               <label className="block text-xs font-medium text-[var(--text-secondary)] uppercase tracking-wider mb-1">Notes</label>
               <textarea
                 value={formData.notes || ''}
