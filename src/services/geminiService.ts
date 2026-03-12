@@ -59,7 +59,32 @@ export const getRecommendations = async (input: string): Promise<Recommendation[
   }
 };
 
+const CACHE_KEY = 'koma_news_cache';
+const CACHE_EXPIRY = 12 * 60 * 60 * 1000; // 12 hours
+
+interface CacheEntry {
+  timestamp: number;
+  data: NewsItem[];
+}
+
 export const searchNews = async (query: string): Promise<NewsItem[]> => {
+  const normalizedQuery = query.trim().toLowerCase();
+  
+  // Check cache first
+  try {
+    const cacheRaw = localStorage.getItem(CACHE_KEY);
+    if (cacheRaw) {
+      const cache: Record<string, CacheEntry> = JSON.parse(cacheRaw);
+      const entry = cache[normalizedQuery];
+      if (entry && Date.now() - entry.timestamp < CACHE_EXPIRY) {
+        console.log("Returning cached news for:", normalizedQuery);
+        return entry.data;
+      }
+    }
+  } catch (e) {
+    console.error("Cache read error:", e);
+  }
+
   const ai = getAI();
   try {
     const response = await ai.models.generateContent({
@@ -76,7 +101,22 @@ export const searchNews = async (query: string): Promise<NewsItem[]> => {
     const text = response.text;
     if (!text) throw new Error("AI returned an empty response.");
 
-    return JSON.parse(text);
+    const results = JSON.parse(text);
+
+    // Save to cache
+    try {
+      const cacheRaw = localStorage.getItem(CACHE_KEY);
+      const cache: Record<string, CacheEntry> = cacheRaw ? JSON.parse(cacheRaw) : {};
+      cache[normalizedQuery] = {
+        timestamp: Date.now(),
+        data: results
+      };
+      localStorage.setItem(CACHE_KEY, JSON.stringify(cache));
+    } catch (e) {
+      console.error("Cache write error:", e);
+    }
+
+    return results;
   } catch (e: any) {
     console.error("News Search Error:", e);
     let message = "Unknown connection error";

@@ -71,8 +71,22 @@ export const NewsPanel: React.FC = () => {
       )}
 
       {error && (
-        <div className="p-4 bg-red-50 dark:bg-red-900/20 text-red-500 rounded-2xl text-center font-medium">
-          {error}
+        <div className="space-y-4">
+          <div className="p-4 bg-red-50 dark:bg-red-900/20 text-red-500 rounded-2xl text-center font-medium">
+            {error}
+          </div>
+          {error.includes("limit") && (
+            <div className="flex justify-center">
+              <a 
+                href={`https://www.google.com/search?q=${encodeURIComponent(query + ' manga news latest chapter')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-[var(--accent)] hover:underline font-medium"
+              >
+                Search on Google instead <ExternalLink size={16} />
+              </a>
+            </div>
+          )}
         </div>
       )}
 
